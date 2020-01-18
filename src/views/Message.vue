@@ -1,10 +1,11 @@
 <template>
   <div class="message">
+    <h3>{{ contact.name }}</h3>
     <ul v-for="message in messages" v-bind:key="message.id">
-      <li>{{ message.message }}</li>
+      <li v-if="message.receiver_id == user.user.id" style="background-color:white;">{{ message.message }}</li>
+      <li v-else style="background-color:green; color:white">{{ message.message }}</li>
     </ul>
 
-    <input type="text" v-model="receiver_id">
     <input type="text" v-model="message">
     <button @click="send">Send</button>
   </div>
@@ -16,24 +17,26 @@ export default {
   props: {
   },
   sockets: {
-    connect: function() {
-      console.log('socket connected')
-    },
     receiveMessage: function(data) {
       this.messages.push(data)
     }
   },
   data() {
+    const user = JSON.parse(localStorage.getItem('user'))
+    const contact = JSON.parse(localStorage.getItem('contact'))
     return {
+      user: user,
       message: '',
       messages: [],
-      authToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJzYW5kaXNhaGRld28iLCJpYXQiOjE1NzkxMzMyMTR9.qlG7yzyzYiQQMRUVlZFGFQQYj9XruEPRnotsmY0neD4',
-      receiver_id: ''
+      authToken: user.token,
+      sender_id: user.user.id,
+      contact: contact,
     }
   },
   methods: {
     get: async function() {
-      fetch(`http://localhost:3000/messages/${this.receiver_id}`, {
+      const contact = JSON.parse(localStorage.getItem('contact'))
+      fetch(`http://localhost:3000/messages/${this.sender_id}/${contact.id}`, {
           headers: {
               Authorization: `Bearer ${this.authToken}`
           }
@@ -49,7 +52,7 @@ export default {
     send: async function() {
       let data = {
           message: this.message,
-          receiver_id: this.receiver_id,
+          receiver_id: this.contact.id,
           type: 'text'
       }
       await fetch('http://localhost:3000/messages', {
