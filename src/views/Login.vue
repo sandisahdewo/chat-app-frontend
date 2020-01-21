@@ -1,10 +1,32 @@
 <template>
-  <div class="login">
-    <input type="text" v-model="username">
-    <input type="text" v-model="password">
-    <button @click="login">Login</button>
-    <button @click="whois">Whois</button>
-  </div>
+   <v-container>
+     <v-row class="mt-5" justify="center">
+      <v-card width="50%">
+        <v-card-title>Login</v-card-title>
+        <v-card-subtitle>Input username and password to login.</v-card-subtitle>
+        <v-card-text>
+          <v-text-field 
+            outlined
+            single-line
+            dense
+            label="Username"
+            v-model="username"/>
+
+        <v-text-field 
+            outlined
+            single-line
+            dense
+            label="Password"
+            v-model="password"/>
+        </v-card-text>
+        <v-card-actions class="justify-end mr-3 mb-2">
+          <router-link to="/register" class="caption mr-2">Not a member? Register here</router-link>
+          <v-btn color="primary" @click="login" class="text-capitalize">Login</v-btn>
+        </v-card-actions>
+      </v-card>
+  
+    </v-row>
+   </v-container>
 </template>
 
 <script>
