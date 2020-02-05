@@ -1,8 +1,14 @@
 <template>
   <div class="contact">
-    <v-row class="px-2 py-2">
+    <v-row align="center" class="px-2 py-2">
       <v-col class="col-auto mr-auto">
-        <h2>Your Contact: {{ user.user.name }}</h2>
+          <v-avatar class="ml-4" size="60">
+            <v-img v-if="user.user.avatar" :src="`http://localhost:3000/${user.user.avatar.name}`"></v-img>
+            <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
+          </v-avatar>
+      </v-col>
+      <v-col>
+        <h3>{{ user.user.name }}</h3>
       </v-col>
       <v-col class="col-auto">
         <v-btn text icon color="black" @click="profile">
@@ -37,7 +43,6 @@
               offset-y="10"
             >
               <v-avatar size="40">
-                <!-- <v-img :src="require(`../../public/avatar/${i}.jpg`)"></v-img> -->
                 <v-img v-if="contact.avatar" :src="`http://localhost:3000/${contact.avatar.name}`"></v-img>
                 <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
               </v-avatar>
@@ -99,10 +104,6 @@ export default {
 
         this.contacts.splice(contact, 1, withoutTyping)
       }
-
-      // if(contact != -1) {
-      //   this.contacts.splice(contact, 1, this.contacts[contact])
-      // }
     },
     showUnreadMessage: function(data) {
       const contact = this.contacts.findIndex(contact => {
