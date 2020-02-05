@@ -23,6 +23,16 @@ const routes = [
     path: '/message',
     name: 'message',
     component: () => import('../views/Message.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/Profile.vue')
+  },
+  {
+    path: '/avatar',
+    name: 'avatar',
+    component: () => import('../views/Avatar.vue')
   }
 ]
 

@@ -12,7 +12,8 @@
               </v-col>
               <v-col class="px-0 col-auto">
                 <v-avatar class="mr-3">
-                  <img :src="require(`../../public/avatar/0.jpg`)">
+                  <img v-if="contact.avatar" :src="`http://localhost:3000/${contact.avatar.name}`">
+                  <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
                 </v-avatar>
               </v-col>
               <v-col>
@@ -132,6 +133,10 @@ export default {
 
       if(data.sender_id == this.user.user.id) {
         this.messages.splice(messageSend, 1, data)
+
+        if(this.contact.id != data.sender_id) {
+          this.$socket.emit('countUnreadMessage', { receiver: this.contact, sender: this.user })
+        }
       } else {
         this.messages.push(data)
 
@@ -140,7 +145,10 @@ export default {
         // if receiver still in sender message page, also read the last message
         if(this.contact.id == data.sender_id) {
           this.read()
-        }
+        } 
+
+        console.log('count unread message 2')
+        // this.$socket.emit('countUnreadMessage', { receiver: this.contact, sender: this.user })
       }
 
     },
@@ -233,6 +241,9 @@ export default {
     },
     stopTyping: function() {
       this.$socket.emit('stopTypingMessage', { receiver: this.contact, sender: this.user })
+    },
+    countUnreadMessage: function() {
+      console.log('unread')
     }
   },
   beforeMount() {

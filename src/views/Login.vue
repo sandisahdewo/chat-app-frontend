@@ -16,6 +16,9 @@
             outlined
             single-line
             dense
+            :type="this.toggle_password_field ? '' : 'password'"
+            :append-icon="this.toggle_password_field ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="togglePasswordField"
             label="Password"
             v-model="password"/>
         </v-card-text>
@@ -36,6 +39,7 @@ export default {
     return {
       username: '',
       password: '',
+      toggle_password_field: false,
       user: {}
     }
   },
@@ -59,10 +63,9 @@ export default {
         console.log(err.message)
       })
     },
-    whois: function() {
-      const storage = JSON.parse(localStorage.getItem('user'))
-      console.log(storage)
-    }
+    togglePasswordField: function() {
+      this.toggle_password_field = !this.toggle_password_field
+    },
   }
 }
 </script>

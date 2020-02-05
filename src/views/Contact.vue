@@ -5,6 +5,16 @@
         <h2>Your Contact: {{ user.user.name }}</h2>
       </v-col>
       <v-col class="col-auto">
+        <v-btn text icon color="black" @click="profile">
+          <v-icon>mdi-account</v-icon>
+        </v-btn>
+      </v-col> 
+      <v-col class="col-auto">
+        <v-btn text icon color="black" @click="avatar">
+          <v-icon>mdi-image</v-icon>
+        </v-btn>
+      </v-col> 
+      <v-col class="col-auto">
         <v-btn text icon color="red" @click="logout">
           <v-icon>mdi-logout</v-icon>
         </v-btn>
@@ -17,9 +27,27 @@
           v-for="(contact, i) in contacts"
           :key="i"
         >
-          <v-list-item-avatar>
+          <div class="pr-2">
+            <v-badge
+              bordered
+              bottom
+              color="green"
+              dot
+              offset-x="10"
+              offset-y="10"
+            >
+              <v-avatar size="40">
+                <!-- <v-img :src="require(`../../public/avatar/${i}.jpg`)"></v-img> -->
+                <v-img v-if="contact.avatar" :src="`http://localhost:3000/${contact.avatar.name}`"></v-img>
+                <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
+              </v-avatar>
+            </v-badge>
+          </div>
+
+          <!-- when not online, change to this -->
+          <!-- <v-list-item-avatar>
             <v-img :src="require(`../../public/avatar/${i}.jpg`)"></v-img>
-          </v-list-item-avatar>
+          </v-list-item-avatar> -->
 
           <v-list-item-content @click="selected(contact)">
             <v-list-item-title v-text="contact.name"></v-list-item-title>
@@ -27,10 +55,10 @@
             <v-list-item-subtitle v-if="!contact.is_typing" v-text="contact.username"></v-list-item-subtitle>
           </v-list-item-content>
 
-          <v-list-item-action>
+          <v-list-item-action v-if="contact.message.length">
             <v-badge
               color="green"
-              dot
+              :content="contact.message.length"
             >
             </v-badge>
           </v-list-item-action>
@@ -64,9 +92,32 @@ export default {
       }) 
 
       if(contact != -1) {
-        this.contacts.splice(contact, 1, data.sender.user)
+        const withoutTyping = {
+          ...this.contacts[contact],
+          is_typing: false
+        }
+
+        this.contacts.splice(contact, 1, withoutTyping)
       }
+
+      // if(contact != -1) {
+      //   this.contacts.splice(contact, 1, this.contacts[contact])
+      // }
     },
+    showUnreadMessage: function(data) {
+      const contact = this.contacts.findIndex(contact => {
+        return data.sender.user.id == contact.id && data.receiver.id == this.user.user.id
+      })  
+
+      if(contact != -1) {
+        const withUnread = {
+          ...this.contacts[contact],
+          message: data.messages
+        }
+
+        this.contacts.splice(contact, 1, withUnread)
+      }
+    }
   },
   data() {
     const user = JSON.parse(localStorage.getItem('user'))
@@ -99,6 +150,12 @@ export default {
       localStorage.removeItem('contact');
       localStorage.removeItem('user');
       this.$router.push('/')
+    },
+    profile: function() {
+      this.$router.push('profile')
+    },
+    avatar: function() {
+      this.$router.push('avatar')
     }
   },
   beforeMount() {

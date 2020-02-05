@@ -35,6 +35,9 @@
             single-line
             dense
             label="Password"
+            :type="this.toggle_password_field ? '' : 'password'"
+            :append-icon="this.toggle_password_field ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="togglePasswordField"
             :error-messages="errors.password" 
             v-model="password"/>
 
@@ -43,6 +46,9 @@
             single-line
             dense
             label="Confirm Password"
+             :type="this.toggle_password_confirmation_field ? '' : 'password'"
+            :append-icon="this.toggle_password_confirmation_field ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="togglePasswordConfirmationField"
             v-model="password_confirmation"/>
 
         </v-card-text>
@@ -66,6 +72,8 @@ export default {
       email: '',
       password: '',
       password_confirmation: '',
+      toggle_password_field: false,
+      toggle_password_confirmation_field: false,
       active: 1,
       errors: {
         name: '',
@@ -109,9 +117,11 @@ export default {
         console.log(err.message)
       })
     },
-    whois: function() {
-      const storage = JSON.parse(localStorage.getItem('user'))
-      console.log(storage)
+    togglePasswordField: function() {
+      this.toggle_password_field = !this.toggle_password_field
+    },
+    togglePasswordConfirmationField: function() {
+      this.toggle_password_confirmation_field = !this.toggle_password_confirmation_field
     }
   }
 }

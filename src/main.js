@@ -21,15 +21,23 @@ Vue.use(vueDebounce, {
 new Vue({
   router,
 
-  sockets: {
-    connect: function() {
-      const user = JSON.parse(localStorage.getItem('user'))
-      this.$socket.emit('userConnect', user)
-    }, 
-    disconnect: function() {
-      const user = JSON.parse(localStorage.getItem('user'))
-      this.$socket.emit('userDisconnect', user)
-    }
+  created() {
+    // const user = JSON.parse(localStorage.getItem('user'))
+
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault();
+      this.$socket.emit('setLastOnline', )
+    });
+
+    window.addEventListener('focus', () => {
+      console.log('stay here')
+      this.$socket.emit('setLastOnline', 'on stay here')
+    })
+
+    window.addEventListener('blur', () => {
+      console.log('youre gone from this tab :( please come back again later')
+      this.$socket.emit('setLastOnline', 'on blur')
+    })
   },
 
   vuetify,
