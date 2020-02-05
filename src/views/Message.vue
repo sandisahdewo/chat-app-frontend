@@ -1,6 +1,25 @@
 <template>
   <v-container>
     <v-row justify="center">
+      <v-dialog v-model="file.showDialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline"></v-card-title>
+          <v-card-text class="pb-0">
+            <v-img :src="file.previewSelected"></v-img>
+            <v-text-field 
+              v-debounce:1s="stopTyping"
+              single-line
+              dense
+              label="Add a caption"
+              v-model="message"/>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="file.showDialog = false">Batal</v-btn>
+            <v-btn color="green darken-1" text @click="file.showDialog = false">Kirim</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-card width="50%">
         <v-card-title class="py-0 align-center">
           <div class="justify-start">
@@ -86,6 +105,12 @@
         </v-card-text>
         <v-card-text>
           <v-row class="mx-3">
+            <v-btn class="mr-2" text tile large icon @click="pickFile" color="gray">
+              <v-icon>mdi-attachment</v-icon>
+            </v-btn>
+
+            <input type="file" ref="file" style="display:none" accept=".jpg" @change="onFilePicked"/>
+
             <v-text-field 
               v-debounce:1s="stopTyping"
               outlined
@@ -175,6 +200,11 @@ export default {
       authToken: user.token,
       sender_id: user.user.id,
       contact: contact,
+      file: {
+        showDialog: false,
+        selected: '',
+        previewSelected: ''
+      },
     }
   },
   methods: {
@@ -205,6 +235,26 @@ export default {
 
       this.scrollToBottom()
       this.read() 
+    },
+    pickFile: function() {
+      this.$refs.file.click()
+    },
+    onFilePicked: function(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+        return;
+
+      this.file.showDialog = true
+      this.file.selected = files[0]
+      this.createImage(files[0])
+    },
+    createImage(file) {
+      var reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.file.previewSelected = e.target.result;
+      };
+      reader.readAsDataURL(file);
     },
     send: async function() {
       let data = {
