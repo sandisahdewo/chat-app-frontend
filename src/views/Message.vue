@@ -11,12 +11,12 @@
               single-line
               dense
               label="Add a caption"
-              v-model="message"/>
+              v-model="file.caption"/>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" text @click="file.showDialog = false">Batal</v-btn>
-            <v-btn color="green darken-1" text @click="file.showDialog = false">Kirim</v-btn>
+            <v-btn color="green darken-1" text @click="sendWithFile">Kirim</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -72,7 +72,15 @@
                 color="green lighten-4"
               >
 
-                {{ message.message }}
+                <div v-if="message.type == 'text'">
+                  {{ message.message }}
+                </div>
+
+                <div v-if="message.type == 'image'">
+                  <div v-if="message.send_at == null">Loading...</div>
+                  {{ message.files }}
+                  <!-- <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img> -->
+                </div>
                 
                 <v-row class="float-right mt-4">
                   <v-col class="px-0 py-0">
@@ -203,7 +211,8 @@ export default {
       file: {
         showDialog: false,
         selected: '',
-        previewSelected: ''
+        previewSelected: '',
+        caption: ''
       },
     }
   },
@@ -276,6 +285,48 @@ export default {
         },
         method: 'POST',
         body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+        this.$socket.emit('sendMessage', response.result)
+      })
+    },
+    sendWithFile: function() {
+      let data = {
+          message: this.message,
+          receiver_id: this.contact.id,
+          type: 'image',
+          created_at: this.$moment(new Date).format('YYYY-MM-DD HH:mm:ss'),
+          files: {
+            name: this.file.selected.name,
+            caption: this.file.caption,
+            message_file: this.file.selected
+          }
+      }
+
+      console.log(data)
+
+      const formData = new FormData()
+      formData.append('message', data.message)
+      formData.append('receiver_id', data.receiver_id)
+      formData.append('type', data.type)
+      formData.append('created_at', data.created_at)
+      formData.append('caption', data.files.caption)
+      formData.append('message_file', data.files.message_file)
+
+      this.file.showDialog = false
+
+      // // push message with clock icon
+      this.messages.push(data)
+      this.file.caption = ''
+      this.scrollToBottom()
+
+      fetch('http://localhost:3000/messages/file', {
+        headers: {
+            Authorization: `Bearer ${this.authToken}`,
+        },
+        method: 'POST',
+        body: formData
       })
       .then(response => response.json())
       .then(response => {
