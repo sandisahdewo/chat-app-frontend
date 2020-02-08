@@ -56,7 +56,15 @@
                 dense
                 color="light-blue lighten-4"
               >
-                {{ message.message }}
+                <div v-if="message.type == 'text'">
+                  {{ message.message }}
+                </div>
+
+                <div v-if="message.type == 'image'">
+                  <div v-if="message.send_at == null">Loading...</div>
+                  <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+                  <div>{{ message.files.caption }}</div>
+                </div>
                 <v-row class="float-right mt-4">
                   <v-col class="px-0 py-0">
                     <div style="font-size:8px;">{{ new Date(message.send_at) | moment('HH:mm') }}</div>
@@ -78,8 +86,8 @@
 
                 <div v-if="message.type == 'image'">
                   <div v-if="message.send_at == null">Loading...</div>
-                  {{ message.files }}
-                  <!-- <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img> -->
+                  <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+                  <div>{{ message.files.caption }}</div>
                 </div>
                 
                 <v-row class="float-right mt-4">
@@ -292,7 +300,7 @@ export default {
       })
     },
     sendWithFile: function() {
-      let data = {
+      const data = {
           message: this.message,
           receiver_id: this.contact.id,
           type: 'image',
@@ -304,7 +312,7 @@ export default {
           }
       }
 
-      console.log(data)
+      this.messages.push(data)
 
       const formData = new FormData()
       formData.append('message', data.message)
@@ -317,7 +325,6 @@ export default {
       this.file.showDialog = false
 
       // // push message with clock icon
-      this.messages.push(data)
       this.file.caption = ''
       this.scrollToBottom()
 
