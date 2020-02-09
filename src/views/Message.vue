@@ -20,6 +20,20 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="selected.dialog" persistent max-width="190">
+        <v-card align="center">
+          <v-card-title class="headline"></v-card-title>
+          <v-card-text class="pb-0">
+            <v-btn color="green darken-1" text @click="selected.dialog = false">Edit</v-btn>
+          </v-card-text>
+          <v-card-text class="pb-0">
+            <v-btn color="green darken-1" text @click="destroy">Delete</v-btn>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-card width="50%">
         <v-card-title class="py-0 align-center">
           <div class="justify-start">
@@ -47,7 +61,7 @@
         <v-divider></v-divider>
 
         <v-card-text class="scroll" id="scroll" style="max-height:500px">
-          <div v-for="message in messages" v-bind:key="message.id"> 
+          <div v-for="(message, key) in messages" v-bind:key="message.id"> 
             <v-row
               v-if="message.receiver_id == user.user.id"
               class="mx-3 mr-8 pr-8">
@@ -56,16 +70,22 @@
                 dense
                 color="light-blue lighten-4"
               >
-                <div v-if="message.type == 'text'">
-                  {{ message.message }}
+                <div v-if="message.deleted_at != null">
+                  Deleted message
                 </div>
+                <div v-else>
+                  <div v-if="message.type == 'text'">
+                    {{ message.message }}
+                  </div>
 
-                <div v-if="message.type == 'image'">
-                  <div v-if="message.send_at == null">Loading...</div>
-                  <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
-                  <div>{{ message.files.caption }}</div>
+                  <div v-if="message.type == 'image'">
+                    <div v-if="message.send_at == null">Loading...</div>
+                    <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+                    <div>{{ message.files.caption }}</div>
+                  </div>
                 </div>
-                <v-row class="float-right mt-4">
+                
+                <v-row class="float-right">
                   <v-col class="px-0 py-0">
                     <div style="font-size:8px;">{{ new Date(message.send_at) | moment('HH:mm') }}</div>
                   </v-col>
@@ -73,24 +93,30 @@
               </v-alert>
             </v-row>
 
-            <v-row v-else class="mx-3 justify-end ml-8 pl-8">
+            <v-row
+              @click="message.deleted_at != null ? '' : select(key)"
+              v-else class="mx-3 justify-end ml-8 pl-8">
               <v-alert
                 class="caption"
                 dense
                 color="green lighten-4"
               >
-
-                <div v-if="message.type == 'text'">
-                  {{ message.message }}
+                <div v-if="message.deleted_at != null">
+                  Deleted message
                 </div>
+                <div v-else>
+                  <div v-if="message.type == 'text'">
+                    {{ message.message }}
+                  </div>
 
-                <div v-if="message.type == 'image'">
-                  <div v-if="message.send_at == null">Loading...</div>
-                  <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
-                  <div>{{ message.files.caption }}</div>
+                  <div v-if="message.type == 'image'">
+                    <div v-if="message.send_at == null">Loading...</div>
+                    <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+                    <div>{{ message.files.caption }}</div>
+                  </div>
                 </div>
                 
-                <v-row class="float-right mt-4">
+                <v-row class="float-right">
                   <v-col class="px-0 py-0">
                     <div style="font-size:8px;">{{ new Date(message.created_at) | moment('HH:mm') }}</div>
                   </v-col>
@@ -203,6 +229,13 @@ export default {
           this.messages.splice(find, 1, element)
         }
       });
+    }, 
+    markAsDeletedMessage: function(data) {
+      const find = this.messages.findIndex(message => {
+        return message.id == data.result.id
+      })
+
+      this.messages.splice(find, 1, data.result)
     }
   },
   data() {
@@ -222,6 +255,10 @@ export default {
         previewSelected: '',
         caption: ''
       },
+      selected: {
+        message: {},
+        dialog: false
+      }
     }
   },
   methods: {
@@ -338,6 +375,26 @@ export default {
       .then(response => response.json())
       .then(response => {
         this.$socket.emit('sendMessage', response.result)
+      })
+    },
+    select: function(key) {
+      this.selected = {
+        message: this.messages[key],
+        dialog: true 
+      }
+    },
+    destroy: async function() {
+      await fetch(`http://localhost:3000/messages/${this.selected.message.id}`, {
+        headers: {
+            Authorization: `Bearer ${this.authToken}`,
+            'Content-Type': 'application/json'
+        },
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(response => {
+        this.selected = { message: {}, dialog: false }
+        this.$socket.emit('markAsDeletedMessage', response)
       })
     },
     goToContact: function() {
