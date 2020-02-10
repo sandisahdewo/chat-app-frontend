@@ -20,11 +20,11 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="selected.dialog" persistent max-width="190">
+      <v-dialog v-model="selected.dialog" max-width="190">
         <v-card align="center">
           <v-card-title class="headline"></v-card-title>
           <v-card-text class="pb-0">
-            <v-btn color="green darken-1" text @click="selected.dialog = false">Edit</v-btn>
+            <v-btn color="green darken-1" text @click="edit">Edit</v-btn>
           </v-card-text>
           <v-card-text class="pb-0">
             <v-btn color="green darken-1" text @click="destroy">Delete</v-btn>
@@ -85,7 +85,10 @@
                   </div>
                 </div>
                 
-                <v-row class="float-right">
+                <v-row class="pl-3">
+                  <v-col class="col-auto pr-1 pl-0 py-0" v-if="message.updated_at != null">
+                    <p style="font-size:8px; padding:0px; margin:0px; color: grey">Edited</p>
+                  </v-col>
                   <v-col class="px-0 py-0">
                     <div style="font-size:8px;">{{ new Date(message.send_at) | moment('HH:mm') }}</div>
                   </v-col>
@@ -117,6 +120,9 @@
                 </div>
                 
                 <v-row class="float-right">
+                  <v-col class="px-2 py-0" v-if="message.updated_at != null">
+                    <p style="font-size:8px; padding:0px; margin:0px; color: grey">Edited</p>
+                  </v-col>
                   <v-col class="px-0 py-0">
                     <div style="font-size:8px;">{{ new Date(message.created_at) | moment('HH:mm') }}</div>
                   </v-col>
@@ -124,9 +130,6 @@
                     <v-icon v-if="message.send_at == null" style="font-size:10px; font-color:orangered" class="pb-1 px-1">mdi-clock</v-icon>
                     <v-icon v-if="message.send_at != null && message.read_at == null" style="font-size:10px" class="pb-1 px-1">mdi-check</v-icon>
                     <v-icon v-if="message.read_at != null" style="font-size:10px; color: deepskyblue">mdi-check-all</v-icon>
-                  </v-col>
-                  <v-col class="px-0 py-0">
-                    <!-- <p style="font-size:6px; padding:0px; margin:0px">Edited</p> -->
                   </v-col>
                 </v-row>
               </v-alert>
@@ -162,8 +165,11 @@
               label="Type a message"
               v-model="message"/>
 
-            <v-btn class="ml-2" text tile large icon @click="send" color="gray">
+            <v-btn class="ml-2" v-if="selected.action != 'edit'" text tile large icon @click="send" color="gray">
               <v-icon>mdi-send</v-icon>
+            </v-btn>
+            <v-btn class="ml-2" v-else text tile large icon @click="update" color="gray">
+              <v-icon>mdi-check</v-icon>
             </v-btn>
 
           </v-row>
@@ -257,7 +263,8 @@ export default {
       },
       selected: {
         message: {},
-        dialog: false
+        dialog: false,
+        action: ''
       }
     }
   },
@@ -382,6 +389,26 @@ export default {
         message: this.messages[key],
         dialog: true 
       }
+    },
+    edit: function() {
+      this.message = this.selected.message.message
+      this.selected = { ...this.selected, action: 'edit', dialog: false }
+    },
+    update: async function() {
+      await fetch(`http://localhost:3000/messages/${this.selected.message.id}`, {
+        headers: {
+            Authorization: `Bearer ${this.authToken}`,
+            'Content-Type': 'application/json'
+        },
+        method: 'PATCH',
+        body: JSON.stringify({message: this.message})
+      })
+      .then(response => response.json())
+      .then(response => {
+        this.selected = {}
+        this.message = ''
+        this.$socket.emit('markAsDeletedMessage', response)
+      })
     },
     destroy: async function() {
       await fetch(`http://localhost:3000/messages/${this.selected.message.id}`, {

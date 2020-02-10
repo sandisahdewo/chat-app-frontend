@@ -1,6 +1,5 @@
 <template>
 	<v-row
-		v-if="message.receiver_id == user.user.id"
 		class="mx-3 mr-8 pr-8">
 		<v-alert
 			class="caption"
@@ -34,6 +33,6 @@
 <script>
 export default {
     name: 'CardText',
-    props: ['message', 'for']
+    props: ['message', 'sender']
 }
 </script>
