@@ -97,7 +97,7 @@
             </v-row>
 
             <v-row
-              @click="message.deleted_at != null ? '' : select(key)"
+              @dblclick="message.deleted_at != null ? '' : select(key)"
               v-else class="mx-3 justify-end ml-8 pl-8">
               <v-alert
                 class="caption"
