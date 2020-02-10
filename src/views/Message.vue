@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
+      <!-- dialog to show image before send -->
       <v-dialog v-model="file.showDialog" persistent max-width="290">
         <v-card>
           <v-card-title class="headline"></v-card-title>
@@ -20,7 +21,8 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="selected.dialog" max-width="190">
+      <!-- dialog to dispatch edit or delete action -->
+      <v-dialog v-model="selected.dialog" v-if="selected.action != 'show-image'" max-width="190">
         <v-card align="center">
           <v-card-title class="headline"></v-card-title>
           <v-card-text class="pb-0">
@@ -32,6 +34,12 @@
           <v-card-actions>
             <v-spacer></v-spacer>
           </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="selected.dialog" v-if="selected.action == 'show-image'" max-width="490">
+        <v-card align="center">
+          <v-card-title class="headline"></v-card-title>
+          <v-img :src="`http://localhost:3000/${selected.message.files.name}`"></v-img>
         </v-card>
       </v-dialog>
       <v-card width="50%">
@@ -114,7 +122,7 @@
 
                   <div v-if="message.type == 'image'">
                     <div v-if="message.send_at == null">Loading...</div>
-                    <v-img v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+                    <v-img @click="viewImage(key)" v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
                     <div>{{ message.files.caption }}</div>
                   </div>
                 </div>
@@ -387,7 +395,7 @@ export default {
     select: function(key) {
       this.selected = {
         message: this.messages[key],
-        dialog: true 
+        dialog: true
       }
     },
     edit: function() {
@@ -423,6 +431,9 @@ export default {
         this.selected = { message: {}, dialog: false }
         this.$socket.emit('markAsDeletedMessage', response)
       })
+    },
+    viewImage: function(key) {
+      this.selected = { message: this.messages[key], dialog: true, action: 'show-image' }
     },
     goToContact: function() {
       this.$router.push('contact')
