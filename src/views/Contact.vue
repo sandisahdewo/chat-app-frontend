@@ -2,7 +2,7 @@
   <div class="contact">
     <v-row align="center" class="px-2 py-2">
       <v-col class="col-auto mr-auto">
-          <v-avatar class="ml-4" size="60">
+          <v-avatar class="ml-4" size="60" @click="avatar">
             <v-img v-if="user.user.avatar" :src="`http://localhost:3000/${user.user.avatar.name}`"></v-img>
             <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
           </v-avatar>
@@ -13,11 +13,6 @@
       <v-col class="col-auto">
         <v-btn text icon color="black" @click="profile">
           <v-icon>mdi-account</v-icon>
-        </v-btn>
-      </v-col> 
-      <v-col class="col-auto">
-        <v-btn text icon color="black" @click="avatar">
-          <v-icon>mdi-image</v-icon>
         </v-btn>
       </v-col> 
       <v-col class="col-auto">
