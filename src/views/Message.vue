@@ -1,6 +1,14 @@
 <template>
   <v-container>
     <v-row justify="center">
+      <v-dialog v-model="emoji.dialog" max-width="370">
+        <v-card>
+          <v-card-title class="headline"></v-card-title>
+          <v-card-text class="pb-0">
+            <VEmojiPicker @select="selectEmoji" />
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <!-- dialog to show image before send -->
       <v-dialog v-model="file.showDialog" persistent max-width="290">
         <v-card>
@@ -158,7 +166,10 @@
         </v-card-text>
         <v-card-text>
           <v-row class="mx-3">
-            <v-btn class="mr-2" text tile large icon @click="pickFile" color="gray">
+            <v-btn class="mr-1" text tile large icon @click="emoji.dialog = true" color="gray">
+              <v-icon>mdi-sticker-emoji</v-icon>
+            </v-btn>
+            <v-btn class="mr-1" text tile large icon @click="pickFile" color="gray">
               <v-icon>mdi-attachment</v-icon>
             </v-btn>
 
@@ -194,8 +205,14 @@
 </style>
 
 <script>
+
+import VEmojiPicker from 'v-emoji-picker';
+
 export default {
   name: 'Message',
+  components: {
+    VEmojiPicker
+  },
   sockets: {
     startTypingMessage: function(data) {
       if(data.receiver.id == this.user.user.id) {
@@ -273,6 +290,9 @@ export default {
         message: {},
         dialog: false,
         action: ''
+      },
+      emoji: {
+        dialog: false
       }
     }
   },
@@ -434,6 +454,9 @@ export default {
     },
     viewImage: function(key) {
       this.selected = { message: this.messages[key], dialog: true, action: 'show-image' }
+    },
+    selectEmoji: function(emoji) {
+      this.message = emoji.data
     },
     goToContact: function() {
       this.$router.push('contact')
