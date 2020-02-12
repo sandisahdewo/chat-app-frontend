@@ -7,6 +7,9 @@
           <v-card-text class="pb-0">
             <VEmojiPicker @select="selectEmoji" />
           </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
       </v-dialog>
       <!-- dialog to show image before send -->
@@ -456,7 +459,7 @@ export default {
       this.selected = { message: this.messages[key], dialog: true, action: 'show-image' }
     },
     selectEmoji: function(emoji) {
-      this.message = emoji.data
+      this.message = this.message + emoji.data
     },
     goToContact: function() {
       this.$router.push('contact')
