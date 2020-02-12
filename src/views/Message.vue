@@ -53,7 +53,7 @@
           <v-img :src="`http://localhost:3000/${selected.message.files.name}`"></v-img>
         </v-card>
       </v-dialog>
-      <v-card width="50%">
+      <v-card width="70%">
         <v-card-title class="py-0 align-center">
           <div class="justify-start">
             <v-row>
@@ -173,7 +173,7 @@
               <v-icon>mdi-sticker-emoji</v-icon>
             </v-btn>
             <v-btn class="mr-1" text tile large icon @click="pickFile" color="gray">
-              <v-icon>mdi-attachment</v-icon>
+              <v-icon>mdi-paperclip</v-icon>
             </v-btn>
 
             <input type="file" ref="file" style="display:none" accept=".jpg" @change="onFilePicked"/>
