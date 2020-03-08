@@ -11,6 +11,12 @@
         <h3>{{ user.user.name }}</h3>
       </v-col>
       <v-col class="col-auto">
+        <v-btn text color="success" @click="profile">
+          <v-icon>mdi-account-group</v-icon>
+           Create Group
+        </v-btn>
+      </v-col> 
+      <v-col class="col-auto">
         <v-btn text icon color="black" @click="profile">
           <v-icon>mdi-account</v-icon>
         </v-btn>

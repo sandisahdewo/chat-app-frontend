@@ -4,6 +4,7 @@ import VueSocketIO from 'vue-socket.io'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import vueDebounce from 'vue-debounce'
+import store from './store/index'
 
 Vue.config.productionTip = false
 
@@ -20,6 +21,7 @@ Vue.use(vueDebounce, {
 
 new Vue({
   router,
+  store,
 
   created() {
     // const user = JSON.parse(localStorage.getItem('user'))
