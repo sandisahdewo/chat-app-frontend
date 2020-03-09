@@ -3,12 +3,12 @@
     <v-row align="center" class="px-2 py-2">
       <v-col class="col-auto mr-auto">
           <v-avatar class="ml-4" size="60" @click="avatar">
-            <v-img v-if="user.user.avatar" :src="`http://localhost:3000/${user.user.avatar.name}`"></v-img>
+            <v-img v-if="user.avatar" :src="`http://localhost:3000/${user.avatar.name}`"></v-img>
             <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
           </v-avatar>
       </v-col>
       <v-col>
-        <h3>{{ user.user.name }}</h3>
+        <h3>{{ user.name }}</h3>
       </v-col>
       <v-col class="col-auto">
         <v-btn text color="success" @click="profile">
@@ -75,6 +75,9 @@
   </div>
 </template>
 <script>
+
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'contact',
   sockets: {
@@ -122,18 +125,16 @@ export default {
     }
   },
   data() {
-    const user = JSON.parse(localStorage.getItem('user'))
     return {
-      user: user,
       contacts: [],
-      authToken: user.token
     }
   },
+  computed: mapGetters({user: 'getUser'}), 
   methods: {
     get: async function () {
-      fetch(`http://localhost:3000/users?except=${this.user.user.id}`, {
+      fetch(`http://localhost:3000/users?except=${this.getUser().id}`, {
           headers: {
-              Authorization: `Bearer ${this.authToken}`
+              Authorization: `Bearer ${this.getToken()}`
           }
         })
         .then(response => response.json())
@@ -158,7 +159,8 @@ export default {
     },
     avatar: function() {
       this.$router.push('avatar')
-    }
+    },
+    ...mapGetters(['getToken', 'getUser'])
   },
   beforeMount() {
     this.get()
