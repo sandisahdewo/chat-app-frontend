@@ -5,6 +5,12 @@
         <v-card-title>Login</v-card-title>
         <v-card-subtitle>Input username and password to login.</v-card-subtitle>
         <v-card-text>
+          <v-alert type="error" v-if="error.message">
+            {{ error.message }}
+            <ul v-for="(validation, key) in error.validation" v-bind:key="key" style="margin-top:10px; padding-left:20px">
+              <li>{{ validation[0] }}</li>
+            </ul>
+          </v-alert>
           <v-text-field 
             outlined
             single-line
@@ -39,6 +45,10 @@ export default {
     return {
       username: '',
       password: '',
+      error: {
+        message: '',
+        validation: {}
+      },
       toggle_password_field: false,
       user: {}
     }
@@ -56,8 +66,16 @@ export default {
       })
       .then(response => response.json())
       .then(response => {
-        localStorage.setItem('user', JSON.stringify(response.result))
-        this.$router.push('contact')
+        if(response.data.code == 404) {
+          this.error.message = response.data.message
+          this.error.validation = {}
+        } else if(response.data.code == 302) {
+          this.error.message = response.data.message
+          this.error.validation = response.error
+        } else {
+          localStorage.setItem('user', JSON.stringify(response.result))
+          this.$router.push('contact')
+        } 
       })
       .catch(err => {
         console.log(err.message)
