@@ -2,7 +2,7 @@
   <div class="contact">
     <v-row align="center" class="px-2 py-2">
       <v-col class="col-auto mr-auto">
-          <v-avatar class="ml-4" size="60" @click="avatar">
+          <v-avatar class="ml-4" size="60" @click="avatar" style="cursor:pointer">
             <v-img v-if="user.avatar" :src="`http://localhost:3000/${user.avatar.name}`"></v-img>
             <v-img v-else :src="require(`../../public/avatar/default.jpg`)"></v-img>
           </v-avatar>

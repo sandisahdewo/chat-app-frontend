@@ -137,7 +137,7 @@ export default {
       })
     },
     async find() {
-      await fetch(`http://localhost:3000/avatar/last-uploaded`, {
+      await fetch(`http://localhost:3000/avatar/last-uploaded/user`, {
         headers: {
           Authorization: `Bearer ${this.user.token}`,
           'Content-Type': 'application/json'
