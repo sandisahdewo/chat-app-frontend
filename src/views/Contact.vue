@@ -76,7 +76,7 @@
 </template>
 <script>
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'contact',
@@ -129,12 +129,15 @@ export default {
       contacts: [],
     }
   },
-  computed: mapGetters({user: 'getUser'}), 
+  computed: mapGetters({
+    user: 'getUser',
+    token: 'getToken'
+  }), 
   methods: {
     get: async function () {
-      fetch(`http://localhost:3000/users?except=${this.getUser().id}`, {
+      fetch(`http://localhost:3000/users?except=${this.user.id}`, {
           headers: {
-              Authorization: `Bearer ${this.getToken()}`
+              Authorization: `Bearer ${this.token}`
           }
         })
         .then(response => response.json())
@@ -146,7 +149,7 @@ export default {
         })
     },
     selected: function(contact) {
-      localStorage.setItem('contact', JSON.stringify(contact))
+      this.$store.dispatch('setSelectedContact', { contact })
       this.$router.push('message')
     },
     logout: function() {
@@ -160,7 +163,6 @@ export default {
     avatar: function() {
       this.$router.push('avatar')
     },
-    ...mapGetters(['getToken', 'getUser'])
   },
   beforeMount() {
     this.get()

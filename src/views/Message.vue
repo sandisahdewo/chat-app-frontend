@@ -2,10 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-card width="70%">
-        <HeaderInformation 
-          v-bind:contact="{name: 'Sandi Sahdewo', avatar: ''}"
-        >
-        </HeaderInformation>
+        <HeaderInformation></HeaderInformation>
 
         <v-divider></v-divider>
 
@@ -28,6 +25,7 @@
 import HeaderInformation from '../components/Message/HeaderInformation'
 import MessagesBox from '../components/Message/MessagesBox'
 import InputBar from '../components/Message/InputBar'
+// import { mapGetters } from 'vuex'
 
 export default {
   name: 'Message',
@@ -41,6 +39,7 @@ export default {
       isTyping: false
     }
   },
+  // computed: mapGetters({ selectedConctact: 'getSelectedContact' }),
   methods: {
     startTyping() {
       this.isTyping = true

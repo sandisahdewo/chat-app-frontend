@@ -1,15 +1,8 @@
 const message = {
   state: {
-    typing: false,
     messages: []
   },
   mutations: {
-    startTyping (state) {
-      state.typing = true
-    },
-    stopTyping (state) {
-      state.typing = false
-    },
     sendMessage (state, text) {
       state.messages.push({
         "sender_id": 1,
@@ -27,9 +20,6 @@ const message = {
   getters: {
     getMessages: state => {
       return state.messages
-    },
-    getTypingStatus: state => {
-      return state.typing
     }
   }
 }

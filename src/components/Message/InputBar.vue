@@ -23,7 +23,7 @@
       <input type="file" ref="file" style="display:none" accept=".jpg"/>
 
       <v-text-field 
-        v-debounce:1s="endTyping"
+        v-debounce:1s="stopTyping"
         outlined
         single-line
         dense
@@ -41,8 +41,8 @@
 
 <script>
 
-import { mapMutations } from 'vuex'
 import VEmojiPicker from 'v-emoji-picker';
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'InputBox',
@@ -58,14 +58,19 @@ export default {
       }
     }
   },
+  computed: mapGetters({ 
+    user: 'getUser',
+    selectedContact: 'getSelectedContact',
+    token: 'getToken' 
+  }), 
   methods: {
-    endTyping() {
-      this.stopTyping()
+    stopTyping() {
+      this.$socket.emit('stopTypingMessage', { receiver: this.selectedContact, sender: this.user })
     },
     send() {
       let data = {
         message: this.message,
-        receiver_id: 1,
+        receiver_id: this.selectedContact.id,
         type: 'text',
         created_at: this.$moment(new Date).format('YYYY-MM-DD HH:mm:ss')
       }
@@ -75,7 +80,7 @@ export default {
 
       fetch('http://localhost:3000/messages', {
         headers: {
-            Authorization: `Bearer ${this.authToken}`,
+            Authorization: `Bearer ${this.token}`,
             'Content-Type': 'application/json'
         },
         method: 'POST',
@@ -95,13 +100,12 @@ export default {
     },
     selectEmoji(emoji) {
       console.log(emoji)
-    },
-    ...mapMutations(['startTyping', 'stopTyping', 'sendMessage'])
+    }
   },
   watch: {
     message(value) {
       if(value != '') {
-        this.startTyping()
+        this.$socket.emit('startTypingMessage', { receiver: this.selectedContact, sender: this.user })
       }
     }
   }
