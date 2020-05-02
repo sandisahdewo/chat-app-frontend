@@ -76,14 +76,14 @@
 </template>
 <script>
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'contact',
   sockets: {
     startTypingMessage: function(data) {
       const contact = this.contacts.findIndex(contact => {
-        return data.sender.user.id == contact.id && data.receiver.id == this.user.user.id
+        return data.sender.id == contact.id && data.receiver.id == this.user.id
       })
 
       if(contact != -1) {
@@ -97,7 +97,7 @@ export default {
     },
     stopTypingMessage: function(data) {
       const contact = this.contacts.findIndex(contact => {
-        return data.sender.user.id == contact.id && data.receiver.id == this.user.user.id
+        return data.sender.id == contact.id && data.receiver.id == this.user.id
       }) 
 
       if(contact != -1) {
