@@ -5,6 +5,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import vueDebounce from 'vue-debounce'
 import store from './store/index'
+import VueChatScroll from 'vue-chat-scroll'
 
 Vue.config.productionTip = false
 
@@ -19,6 +20,8 @@ Vue.use(vueDebounce, {
   listenTo: ['input', 'keyup'],
 })
 
+Vue.use(VueChatScroll)
+
 new Vue({
   router,
   store,
@@ -32,12 +35,10 @@ new Vue({
     });
 
     window.addEventListener('focus', () => {
-      console.log('stay here')
       this.$socket.emit('setLastOnline', 'on stay here')
     })
 
     window.addEventListener('blur', () => {
-      console.log('youre gone from this tab :( please come back again later')
       this.$socket.emit('setLastOnline', 'on blur')
     })
   },

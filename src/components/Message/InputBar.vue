@@ -75,7 +75,7 @@ export default {
         created_at: this.$moment(new Date).format('YYYY-MM-DD HH:mm:ss')
       }
 
-      this.sendMessage(this.message)   
+      this.$store.dispatch('pushMessage', data)
       this.message = ''
 
       fetch('http://localhost:3000/messages', {
@@ -88,8 +88,7 @@ export default {
       })
       .then(response => response.json())
       .then(response => {
-        console.log(response)
-        // this.$socket.emit('sendMessage', response.result)
+        this.$socket.emit('sendMessage', response.result)
       })
     },
     openUploadFileDialog() {

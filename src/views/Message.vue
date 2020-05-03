@@ -14,12 +14,6 @@
   </v-container>
 </template>
 
-<style scoped>
-.scroll {
-  overflow-y: auto;
-}
-</style>
-
 <script>
 
 import HeaderInformation from '../components/Message/HeaderInformation'
