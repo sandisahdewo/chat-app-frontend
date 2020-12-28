@@ -4,6 +4,8 @@
       <v-card width="70%">
         <HeaderInformation></HeaderInformation>
 
+        <Modals></Modals>
+
         <v-divider></v-divider>
 
         <MessagesBox></MessagesBox>
@@ -17,14 +19,15 @@
 <script>
 
 import HeaderInformation from '../components/Message/HeaderInformation'
+import Modals from '../components/Message/Modals'
 import MessagesBox from '../components/Message/MessagesBox'
 import InputBar from '../components/Message/InputBar'
-// import { mapGetters } from 'vuex'
 
 export default {
   name: 'Message',
   components: {
     HeaderInformation,
+    Modals,
     MessagesBox,
     InputBar
   },
@@ -33,15 +36,13 @@ export default {
       isTyping: false
     }
   },
-  // computed: mapGetters({ selectedConctact: 'getSelectedContact' }),
   methods: {
     startTyping() {
       this.isTyping = true
     },
     stopTyping() {
       this.isTyping = false
-    } 
+    }
   }
-  
 }
 </script>

@@ -72,7 +72,14 @@ export default {
           this.messages.splice(find, 1, element)
         }
       });
-    }, 
+    },
+    markAsDeletedMessage: function(data) {
+      const find = this.messages.findIndex(message => {
+        return message.id == data.result.id
+      })
+
+      this.messages.splice(find, 1, data.result)
+    }
   },
   computed: mapGetters({
     token: 'getToken',
@@ -85,7 +92,7 @@ export default {
       let messageNotRead = await this.messages.filter((message) => {
         return message.read_at == null && message.sender_id == this.selectedContact.id;
       })
-      
+
       this.$socket.emit('readMessage', {
         contact: this.selectedContact,
         user: this.user,
@@ -106,7 +113,7 @@ export default {
           console.log(err.message)
         })
 
-      this.read() 
+      this.read()
     }
   },
   beforeMount() {

@@ -111,7 +111,7 @@ export default {
     },
     showUnreadMessage: function(data) {
       const contact = this.contacts.findIndex(contact => {
-        return data.sender.user.id == contact.id && data.receiver.id == this.user.user.id
+        return data.sender.id == contact.id
       })  
 
       if(contact != -1) {

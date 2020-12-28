@@ -7,6 +7,7 @@
       color="light-blue lighten-4"
     >
       <div v-if="message.deleted_at != null">
+        <v-icon style="font-size:12px; font-color:orangered">mdi-cancel</v-icon>
         Deleted message
       </div>
       <div v-else>
@@ -20,8 +21,8 @@
           <div>{{ message.files.caption }}</div>
         </div>
       </div>
-      
-      <v-row class="pl-3">
+
+      <v-row class="pl-3" v-if="message.deleted_at == null">
         <v-col class="col-auto pr-1 pl-0 py-0" v-if="message.updated_at != null">
           <p style="font-size:8px; padding:0px; margin:0px; color: grey">Edited</p>
         </v-col>

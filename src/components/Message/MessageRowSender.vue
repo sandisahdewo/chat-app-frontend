@@ -1,6 +1,6 @@
 <template>
   <v-row
-    @dblclick="message.deleted_at != null ? '' : select(key)"
+    @dblclick="message.deleted_at != null ? '' : select(row)"
     class="mx-3 justify-end ml-8 pl-8">
     <v-alert
       class="caption"
@@ -8,6 +8,7 @@
       color="green lighten-4"
     >
       <div v-if="message.deleted_at != null">
+        <v-icon style="font-size:12px; font-color:orangered">mdi-cancel</v-icon>
         Deleted message
       </div>
       <div v-else>
@@ -17,12 +18,12 @@
 
         <div v-if="message.type == 'image'">
           <div v-if="message.send_at == null">Loading...</div>
-          <v-img @click="viewImage(key)" v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
+          <v-img @click="viewImage(row)" v-if="message.send_at != null" max-width="250" :src="`http://localhost:3000/${message.files.name}`"></v-img>
           <div>{{ message.files.caption }}</div>
         </div>
       </div>
-      
-      <v-row class="float-right">
+
+      <v-row class="float-right" v-if="message.deleted_at == null">
         <v-col class="px-2 py-0" v-if="message.updated_at != null">
           <p style="font-size:8px; padding:0px; margin:0px; color: grey">Edited</p>
         </v-col>
@@ -40,11 +41,37 @@
 </template>
 
 <script>
+
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'MessageRowReceiver',
   props: {
     message: Object,
-    row: Number,
+    row: Number
+  },
+  data() {
+    return {
+      selected: {
+        message: {},
+        dialog: false,
+        action: ''
+      }
+    }
+  },
+  computed: mapGetters({
+    token: 'getToken',
+    messages: 'getMessages',
+    user: 'getUser',
+    selectedContact: 'getSelectedContact'
+  }),
+  methods: {
+    select: function(key) {
+      this.$store.dispatch('openModalAction', this.messages[key])
+    },
+    viewImage: function(key) {
+      this.$store.dispatch('openModalImage', this.messages[key])
+    }
   }
 }
 </script>
